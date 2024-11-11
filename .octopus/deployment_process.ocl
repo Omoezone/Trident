@@ -20,7 +20,7 @@ step "verify-connectivity" {
 step "deploy-trident-web" {
     name = "Deploy Trident Website"
     properties = {
-        Octopus.Action.MaxParallelism = "5"
+        Octopus.Action.MaxParallelism = "1"
         Octopus.Action.TargetRoles = "trident-web"
     }
 
