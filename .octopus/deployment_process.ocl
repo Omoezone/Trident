@@ -26,6 +26,7 @@ step "deploy-trident-web" {
 
     action "remove-from-load-balancer" {
         action_type = "Octopus.Script"
+        environments = ["staging", "production"]
         name = "Remove from load balancer"
         properties = {
             Octopus.Action.Script.ScriptBody = <<-EOT
@@ -33,13 +34,7 @@ step "deploy-trident-web" {
                 
                 Write-Host "Remove $machineName from the Load Balancer."
                 
-                $number = Get-Random -Maximum 10
-                Write-Host "The random number is $number"
-                if ($number -ge 8)
-                {
-                  Write-Host "Force an error with Exit code 1"
-                  Exit 1
-                }
+                
                 EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
