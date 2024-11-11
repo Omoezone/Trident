@@ -32,9 +32,14 @@ step "deploy-trident-web" {
                 $machineName = $OctopusParameters["Octopus.Machine.Name"]
                 
                 Write-Host "Remove $machineName from the Load Balancer."
-                Write-Host "Force an error with Exit code 1"
                 
-                Exit 1
+                $number = Get-Random -Maximum 10
+                Write-Host "The random number is $number"
+                if ($number -ge 8)
+                {
+                  Write-Host "Force an error with Exit code 1"
+                  Exit 1
+                }
                 EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
