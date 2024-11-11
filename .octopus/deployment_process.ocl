@@ -26,13 +26,15 @@ step "deploy-trident-web" {
 
     action "remove-from-load-balancer" {
         action_type = "Octopus.Script"
-        environments = ["staging", "production"]
         name = "Remove from load balancer"
         properties = {
             Octopus.Action.Script.ScriptBody = <<-EOT
                 $machineName = $OctopusParameters["Octopus.Machine.Name"]
                 
                 Write-Host "Remove $machineName from the Load Balancer."
+                Write-Host "Force an error with Exit code 1"
+                
+                Exit 1
                 EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
@@ -51,6 +53,7 @@ step "deploy-trident-web" {
             Octopus.Action.Package.FeedId = "octopus-server-built-in"
             Octopus.Action.Package.JsonConfigurationVariablesTargets = "appsettings.json"
             Octopus.Action.Package.PackageId = "Trident.Web"
+            Octopus.Action.RunOnServer = "false"
         }
         worker_pool_variable = ""
 
@@ -91,6 +94,7 @@ step "send-an-email" {
             Octopus.Action.Email.Body = "#{Notification.Body.Text}"
             Octopus.Action.Email.Subject = "#{Notification.Subject.Text}"
             Octopus.Action.Email.ToTeamIds = "trident-notification"
+            Octopus.Action.RunOnServer = "false"
         }
     }
 }
