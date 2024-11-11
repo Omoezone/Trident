@@ -34,7 +34,7 @@ step "generate-database-delta-report" {
                 $packagePath = $OctopusParameters["Octopus.Action.Package[Trident.Database].ExtractedPath"]
                 $connectionString = $OctopusParameters["Project.Connection.String"]
                 $environmentName = $OctopusParameters["Octopus.Environment.Name"]
-                $reportPath = $OctopusParameters["Project.Database.Report.Path"]
+                $reportPath = "C:\DatabaseReports"
                 
                 cd $packagePath
                 $appToRun = ".\Octopus.Trident.Database.DbUp"
@@ -71,6 +71,7 @@ step "approve-database-delta-script" {
             Octopus.Action.Manual.BlockConcurrentDeployments = "True"
             Octopus.Action.Manual.Instructions = "Approve the database delta script found in the artifacts section"
             Octopus.Action.Manual.ResponsibleTeamIds = "dbas,global/octopus-managers"
+            Octopus.Action.RunOnServer = "false"
         }
     }
 }
