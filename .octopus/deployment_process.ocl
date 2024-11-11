@@ -20,13 +20,12 @@ step "verify-connectivity" {
 step "deploy-trident-web" {
     name = "Deploy Trident Website"
     properties = {
-        Octopus.Action.MaxParallelism = "1"
+        Octopus.Action.MaxParallelism = "5"
         Octopus.Action.TargetRoles = "trident-web"
     }
 
     action "remove-from-load-balancer" {
         action_type = "Octopus.Script"
-        environments = ["staging", "production"]
         name = "Remove from load balancer"
         properties = {
             Octopus.Action.Script.ScriptBody = <<-EOT
