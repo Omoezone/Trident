@@ -31,80 +31,49 @@ step "generate-database-delta-report" {
         action_type = "Octopus.Script"
         properties = {
             Octopus.Action.Script.ScriptBody = <<-EOT
-                $CommandsRequireApproval = $OctopusParameters["Databases.AutoApprove.CommandsRequireApproval"]
-                $CommandsIndicatingChange = $OctopusParameters["Databases.AutoApprove.CommandsIndicatingChange"]
-                $ReportPath = $OctopusParameters["Databases.AutoApproval.ReportPath"]
-                $stepName = $OctopusParameters["Octopus.Action.StepName"]
-                Write-Host "The REPORT PATH is $ReportPath"
-                Write-Host "Commands requiring approval: $CommandsRequireApproval"
-                Write-Host "Octopus indicating changes: $CommandsIndicatingChange"
-                Write-Host "Report Path: $ReportPath"
                 
+                $packagePath = $OctopusParameters["Octopus.Action.Package[Trident.Database].ExtractedPath"]
+                $connectionString = $OctopusParameters["Project.Connection.String"]
+                $commandsToLookFor = $OctopusParameters["SQL.Verification.Command.List"]
+                $environmentName = $OctopusParameters["Octopus.Environment.Name"]
+                $reportPath = $OctopusParameters["Project.Database.Report.Path"]
+                
+                cd $packagePath
+                $appToRun = ".\Octopus.Trident.Database.DbUp"
+                $generatedReport = "$reportPath\UpgradeReport.html"
+                
+                & $appToRun --ConnectionString="$connectionString" --PreviewReportPath="$reportPath"
+                
+                New-OctopusArtifact -Path "$generatedReport" -Name "$environmentName.UpgradeReport.html"
+                
+                Write-Host "Looping through all commands"
+                $commandListToCheck = $CommandsToLookFor -split ","
                 $ApprovalRequired = $false
-                $HasDatabaseChanges = $false
                 
-                $fileContent = Get-Content -path $ReportPath
+                $fileContent = Get-Content -path $generatedReport
+                foreach ($command in $commandListToCheck)
+                {
+                    Write-Host "Checking $($sqlFile.FileName) for command $command"
+                    $foundCommand = $fileContent -match "$command"
                 
-                $commandListToCheck = $CommandsRequireApproval -split ","
-                $commandListForChanges = $CommandsIndicatingChange -split ","
-                
-                    Write-Host "Looping through all commands requiring approval for $ReportPath"
-                	foreach ($command in $commandListToCheck)
+                    if ($foundCommand)
                     {
-                    	Write-Host "Checking $ReportPath for command $command"
-                    	$foundCommand = $fileContent -match "$command"
-                    
-                    	if ($foundCommand)
-                        {
-                        	Write-Highlight "$ReportPath has the command '$command'"
-                            $ApprovalRequired = $true
-                            $HasDatabaseChanges = $true
-                        }
+                        Write-Highlight "$($sqlFile.FileName) has the command '$command'"
+                        $ApprovalRequired = $true
                     }
-                
-                    if ($ApprovalRequired -eq $true)
-                    {
-                        Write-Host "Approval is required, so there has to be changes, skipping over the changes check"
-                    }
-                    else
-                    {
-                      Write-Host "Looping through all commands indicating changes for $reportPath"
-                      foreach ($command in $commandListForChanges)
-                      {
-                          Write-Host "Checking $ReportPath for command $command"
-                          $foundCommand = $fileContent -match "$command"
-                
-                          if ($foundCommand)
-                          {
-                              Write-Highlight "$ReportPath has the command '$command'"
-                              $HasDatabaseChanges = $true
-                          }
-                      }
-                    }
-                
+                }
                 
                 if ($approvalRequired -eq $false)
                 {
-                	Write-Highlight "All scripts look good"
+                    Write-Highlight "All scripts look good"
                 }
                 else
                 {
-                	Write-Highlight "One of the specific commands we look for has been found"
-                }
-                
-                if ($HasDatabaseChanges -eq $false)
-                {
-                    Write-Highlight "No database changes were detected"
-                }
-                else
-                {
-                    Write-Highlight "Database changes have been detected"
+                    Write-Highlight "One of the specific commands we look for has been found"
                 }
                 
                 Set-OctopusVariable -name "ApprovalRequired" -value $ApprovalRequired
-                Write-Host "Variable run conditions: ##{unless Octopus.Deployment.Error}#{Octopus.Action[$stepName].Output.ApprovalRequired}##{/unless}"
-                Set-OctopusVariable -name "HasDatabaseChanges" -value $HasDatabaseChanges
-                Write-Host "Variable run conditions: ##{unless Octopus.Deployment.Error}#{Octopus.Action[$stepName].Output.HasDatabaseChanges}##{/unless}"
+                
                 EOT
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
