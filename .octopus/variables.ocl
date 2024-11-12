@@ -15,5 +15,5 @@ variable "Project.Database.Name" {
 }
 
 variable "Project.Database.Report.Path" {
-    value "C:\\Users\\klj600\\Desktop\\DatabaseReports\\#{Octopus.Environment.Name}" {}
+    value "C:\\Users\\klj600\\Desktop\\DatabaseReports" {}
 }
