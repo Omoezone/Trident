@@ -71,7 +71,7 @@ step "auto-approve-database-delta-script" {
         properties = {
             Database.AutoApprove.CommandsIndicatingChange = "#{SQL.Verification.Change.List}"
             Database.AutoApprove.CommandsRequireApproval = "#{SQL.Verification.Command.List}"
-            Databases.AutoApproval.ReportPath = "#{Project.Database.Report.Path}\\Upgrade.html"
+            Databases.AutoApproval.ReportPath = "#{Project.Database.Report.Path}\\UpgradeReport.html"
             Octopus.Action.Template.Id = "ActionTemplates-23"
             Octopus.Action.Template.Version = "1"
         }
