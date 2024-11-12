@@ -19,5 +19,5 @@ variable "Project.Database.ApprovalRequired" {
 }
 
 variable "Project.Database.Report.Path" {
-    value "H:\\DatabaseReports\\#{Octopus.Environment.Name}" {}
+    value "C:\\Users\\klj600\\DatabaseReports\\#{Octopus.Environment.Name}" {}
 }
