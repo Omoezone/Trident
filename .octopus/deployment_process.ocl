@@ -197,3 +197,15 @@ step "send-an-email" {
         }
     }
 }
+
+step "auto-approve-database-delta-script" {
+    name = "Auto-Approve Database Delta Script"
+
+    action {
+        properties = {
+            Octopus.Action.Template.Id = "ActionTemplates-23"
+            Octopus.Action.Template.Version = "1"
+        }
+        worker_pool = "hosted-windows"
+    }
+}
