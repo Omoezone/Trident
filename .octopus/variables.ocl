@@ -17,3 +17,7 @@ variable "Project.Database.Name" {
 variable "Project.Database.Report.Path" {
     value "C:\\Users\\klj600\\Desktop\\DatabaseReports" {}
 }
+
+variable "Project.Database.ApprovalRequired" {
+    value "#{Octopus.Action[Approve Database Delta Script].Output.ApprovalRequired}" {}
+}
