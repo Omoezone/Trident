@@ -35,7 +35,7 @@ step "generate-database-delta-report" {
                 $CommandsIndicatingChange = $OctopusParameters["Databases.AutoApprove.CommandsIndicatingChange"]
                 $ReportPath = $OctopusParameters["Databases.AutoApproval.ReportPath"]
                 $stepName = $OctopusParameters["Octopus.Action.StepName"]
-                
+                Write-Host "The REPORT PATH is $ReportPath"
                 Write-Host "Commands requiring approval: $CommandsRequireApproval"
                 Write-Host "Octopus indicating changes: $CommandsIndicatingChange"
                 Write-Host "Report Path: $ReportPath"
